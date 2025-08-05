@@ -1,0 +1,144 @@
+import random
+
+def print_board(board):
+    """Prints the current game board"""
+    print("\n")
+    print(f" {board[0]} | {board[1]} | {board[2]} ")
+    print("-----------")
+    print(f" {board[3]} | {board[4]} | {board[5]} ")
+    print("-----------")
+    print(f" {board[6]} | {board[7]} | {board[8]} ")
+    print("\n")
+
+def check_winner(board):
+    """Checks if there's a winner or a tie"""
+    # Check rows
+    for i in range(0, 9, 3):
+        if board[i] == board[i+1] == board[i+2] != " ":
+            return board[i]
+    
+    # Check columns
+    for i in range(3):
+        if board[i] == board[i+3] == board[i+6] != " ":
+            return board[i]
+    
+    # Check diagonals
+    if board[0] == board[4] == board[8] != " ":
+        return board[0]
+    if board[2] == board[4] == board[6] != " ":
+        return board[2]
+    
+    # Check for tie
+    if " " not in board:
+        return "Tie"
+    
+    return None
+
+def player_move(board):
+    """Handles player's move"""
+    while True:
+        try:
+            move = int(input("Enter your move (1-9): ")) - 1
+            if 0 <= move <= 8 and board[move] == " ":
+                return move
+            else:
+                print("Invalid move. Try again.")
+        except ValueError:
+            print("Please enter a number between 1 and 9.")
+
+def computer_move(board, computer_char):
+    """Simple AI for computer's move"""
+    # Check for winning move
+    for i in range(9):
+        if board[i] == " ":
+            board[i] = computer_char
+            if check_winner(board) == computer_char:
+                return i
+            board[i] = " "
+    
+    # Block player's winning move
+    player_char = "X" if computer_char == "O" else "O"
+    for i in range(9):
+        if board[i] == " ":
+            board[i] = player_char
+            if check_winner(board) == player_char:
+                board[i] = " "
+                return i
+            board[i] = " "
+    
+    # Take center if available
+    if board[4] == " ":
+        return 4
+    
+    # Take a corner if available
+    corners = [0, 2, 6, 8]
+    random.shuffle(corners)
+    for corner in corners:
+        if board[corner] == " ":
+            return corner
+    
+    # Take any available space
+    for i in range(9):
+        if board[i] == " ":
+            return i
+
+def play_game():
+    """Main game loop"""
+    board = [" "] * 9
+    current_player = "X"
+    
+    # Choose who goes first
+    choice = input("Do you want to go first? (y/n): ").lower()
+    if choice == 'y':
+        player_char = "X"
+        computer_char = "O"
+    else:
+        player_char = "O"
+        computer_char = "X"
+        current_player = computer_char
+    
+    while True:
+        print_board(board)
+        
+        if current_player == player_char:
+            print("Your turn!")
+            move = player_move(board)
+            board[move] = player_char
+        else:
+            print("Computer's turn...")
+            move = computer_move(board, computer_char)
+            board[move] = computer_char
+            print(f"Computer chose position {move + 1}")
+        
+        winner = check_winner(board)
+        if winner:
+            print_board(board)
+            if winner == "Tie":
+                print("It's a tie!")
+            elif winner == player_char:
+                print("Congratulations! You won!")
+            else:
+                print("Computer wins!")
+            break
+        
+        # Switch players
+        current_player = "O" if current_player == "X" else "X"
+
+def main():
+    print("Welcome to Tic Tac Toe!")
+    print("Positions are numbered from 1 to 9 as follows:")
+    print(" 1 | 2 | 3 ")
+    print("-----------")
+    print(" 4 | 5 | 6 ")
+    print("-----------")
+    print(" 7 | 8 | 9 ")
+    
+    while True:
+        play_game()
+        play_again = input("Do you want to play again? (y/n): ").lower()
+        if play_again != 'y':
+            print("Thanks for playing! Goodbye!")
+            break
+
+if _name_ == "_main_":
+    main()
