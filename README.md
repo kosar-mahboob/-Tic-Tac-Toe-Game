@@ -19,6 +19,7 @@ This is a simple *Tic Tac Toe* game in Python where you play against a basic AI.
 
 ---
 
+
 ## 🖥 How the Board Works
 
 1 | 2 | 3
